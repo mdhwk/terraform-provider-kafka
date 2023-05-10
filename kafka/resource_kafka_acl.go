@@ -236,5 +236,5 @@ func getACLDetails(ctx context.Context, d *schema.ResourceData) (acl kadm.ACLBui
 }
 
 func makeACLIdentifier(res *client.ACLResult) string {
-	return strings.ToLower(strings.Join([]string{*res.Principal, *res.Host, res.Operation.String(), res.Type.String(), *res.Name, res.Pattern.String(), res.Permission.String()}, "|"))
+	return strings.ToLower(strings.Join([]string{res.Principal, res.Host, res.Operation.String(), res.Type.String(), res.Name, res.Pattern.String(), res.Permission.String()}, "|"))
 }
