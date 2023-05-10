@@ -8,10 +8,10 @@ import (
 )
 
 type ACLResult struct {
-	Principal  *string
-	Host       *string
+	Principal  string
+	Host       string
 	Type       kmsg.ACLResourceType
-	Name       *string
+	Name       string
 	Pattern    kadm.ACLPattern
 	Operation  kadm.ACLOperation
 	Permission kmsg.ACLPermissionType
@@ -31,10 +31,10 @@ func CreateACLs(ctx context.Context, c *kadm.Client, acl *kadm.ACLBuilder) ([]AC
 	res := make([]ACLResult, len(response))
 	for i, r := range response {
 		res[i] = ACLResult{
-			Principal:  &r.Principal,
-			Host:       &r.Host,
+			Principal:  r.Principal,
+			Host:       r.Host,
 			Type:       r.Type,
-			Name:       &r.Name,
+			Name:       r.Name,
 			Pattern:    r.Pattern,
 			Operation:  r.Operation,
 			Permission: r.Permission,
@@ -58,10 +58,10 @@ func DeleteACLs(ctx context.Context, c *kadm.Client, acl *kadm.ACLBuilder) (res 
 	res = make([]ACLResult, len(response))
 	for i, r := range response {
 		res[i] = ACLResult{
-			Principal:  r.Principal,
-			Host:       r.Host,
+			Principal:  *r.Principal,
+			Host:       *r.Host,
 			Type:       r.Type,
-			Name:       r.Name,
+			Name:       *r.Name,
 			Pattern:    r.Pattern,
 			Operation:  r.Operation,
 			Permission: r.Permission,
@@ -85,10 +85,10 @@ func ReadACLs(ctx context.Context, c *kadm.Client, acl *kadm.ACLBuilder) (res []
 	res = make([]ACLResult, len(response))
 	for i, r := range response {
 		res[i] = ACLResult{
-			Principal:  r.Principal,
-			Host:       r.Host,
+			Principal:  *r.Principal,
+			Host:       *r.Host,
 			Type:       r.Type,
-			Name:       r.Name,
+			Name:       *r.Name,
 			Pattern:    r.Pattern,
 			Operation:  r.Operation,
 			Permission: r.Permission,

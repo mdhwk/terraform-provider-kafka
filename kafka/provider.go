@@ -94,10 +94,10 @@ func stringValueSlice(in []interface{}) []string {
 	return s
 }
 
-func stringValueMap(in map[string]interface{}) map[string]string {
-	m := make(map[string]string, len(in))
-	for k, v := range in {
-		m[k] = v.(string)
-	}
-	return m
-}
+// func stringValueMap(in map[string]interface{}) map[string]string {
+// 	m := make(map[string]string, len(in))
+// 	for k, v := range in {
+// 		m[k] = v.(string)
+// 	}
+// 	return m
+// }
