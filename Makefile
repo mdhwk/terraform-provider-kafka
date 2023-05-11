@@ -1,4 +1,3 @@
-#TEST?=$$(go list ./... | grep -v 'vendor')
 HOSTNAME=mdhwk.io
 NAMESPACE=mdhwk
 NAME=kafka
