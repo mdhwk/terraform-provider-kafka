@@ -3,7 +3,9 @@ NAMESPACE=mdhwk
 NAME=kafka
 BINARY=terraform-provider-${NAME}
 VERSION=0.1
-OS_ARCH=darwin_arm64
+GO_HOSTARCH=$(shell go env GOHOSTARCH)
+GO_HOSTOS=$(shell go env GOHOSTOS)
+OS_ARCH=${GO_HOSTOS}_${GO_HOSTARCH}
 
 default: install
 
