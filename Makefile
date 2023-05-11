@@ -1,5 +1,5 @@
 #TEST?=$$(go list ./... | grep -v 'vendor')
-HOSTNAME=mdhwk.io #registry.terraform.io
+HOSTNAME=mdhwk.io
 NAMESPACE=mdhwk
 NAME=kafka
 BINARY=terraform-provider-${NAME}
