@@ -182,7 +182,7 @@ func resourceACLDelete(ctx context.Context, d *schema.ResourceData, m interface{
 	return diags
 }
 
-func getACLDetails(ctx context.Context, d *schema.ResourceData) (acl kadm.ACLBuilder, diags diag.Diagnostics) {
+func getACLDetails(_ context.Context, d *schema.ResourceData) (acl kadm.ACLBuilder, diags diag.Diagnostics) {
 	resourceName := d.Get("resource_name").(string)
 	resourceType := d.Get("resource_type").(string)
 	resourcePatternTypeFilter := d.Get("resource_pattern_type_filter").(string)

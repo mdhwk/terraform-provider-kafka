@@ -69,7 +69,7 @@ func configure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.D
 }
 
 func parseAwsIAM(d *schema.ResourceData) *client.IAM {
-	if v, ok := d.GetOkExists("aws_iam"); ok {
+	if v, ok := d.GetOk("aws_iam"); ok {
 		m := terraformMap(v)
 		return &client.IAM{
 			RoleArn:     m["role_arn"].(string),
