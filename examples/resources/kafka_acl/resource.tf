@@ -1,4 +1,4 @@
-resource "kafka_acls" "topic_knative_broker_prefixed" {
+resource "kafka_acl" "example" {
   resource_name                = "<topic_name>"
   resource_type                = "Topic"
   resource_pattern_type_filter = "Prefixed"

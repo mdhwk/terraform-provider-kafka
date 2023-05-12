@@ -1,4 +1,4 @@
-package kafka
+package provider
 
 import (
 	"context"
@@ -8,9 +8,32 @@ import (
 	"github.com/mdhwk/terraform-provider-kafka/internal/provider/client"
 )
 
-func Provider() *schema.Provider {
-	return &schema.Provider{
-		Schema: map[string]*schema.Schema{
+func init() {
+	// Set descriptions to support markdown syntax, this will be used in document generation
+	// and the language server.
+	schema.DescriptionKind = schema.StringMarkdown
+
+	// Customize the content of descriptions when output. For example you can add defaults on
+	// to the exported descriptions if present.
+	// schema.SchemaDescriptionBuilder = func(s *schema.Schema) string {
+	// 	desc := s.Description
+	// 	if s.Default != nil {
+	// 		desc += fmt.Sprintf(" Defaults to `%v`.", s.Default)
+	// 	}
+	// 	return strings.TrimSpace(desc)
+	// }
+}
+
+func New(version string) func() *schema.Provider {
+	return func() *schema.Provider {
+		p := &schema.Provider{
+			DataSourcesMap: map[string]*schema.Resource{},
+			ResourcesMap: map[string]*schema.Resource{
+				"kafka_acl": resourceACL(),
+			},
+		}
+
+		p.Schema = map[string]*schema.Schema{
 			"bootstrap_servers": {
 				Type:        schema.TypeList,
 				Elem:        &schema.Schema{Type: schema.TypeString},
@@ -18,13 +41,29 @@ func Provider() *schema.Provider {
 				Description: "Comma separated list of brokers. Format <broker>:<port>.",
 			},
 			"aws_iam": awsIamSchema(),
-		},
-		ResourcesMap: map[string]*schema.Resource{
-			"kafka_acl": resourceACL(),
-			//"kafka_acls": resourceACLs(),
-		},
-		DataSourcesMap:       map[string]*schema.Resource{},
-		ConfigureContextFunc: configure,
+		}
+
+		p.ConfigureContextFunc = configure(version, p)
+
+		return p
+	}
+}
+
+func configure(version string, p *schema.Provider) func(context.Context, *schema.ResourceData) (interface{}, diag.Diagnostics) {
+	return func(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
+		config := client.Config{
+			BootstrapServers: stringValueSlice(d.Get("bootstrap_servers").([]interface{})),
+			IAM:              parseAwsIAM(d),
+		}
+
+		var diags diag.Diagnostics
+
+		c, err := client.NewClient(&config)
+		if err != nil {
+			return nil, diag.FromErr(err)
+		}
+
+		return c, diags
 	}
 }
 
@@ -50,22 +89,6 @@ func awsIamSchema() *schema.Schema {
 			},
 		},
 	}
-}
-
-func configure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
-	config := client.Config{
-		BootstrapServers: stringValueSlice(d.Get("bootstrap_servers").([]interface{})),
-		IAM:              parseAwsIAM(d),
-	}
-
-	var diags diag.Diagnostics
-
-	c, err := client.NewClient(&config)
-	if err != nil {
-		return nil, diag.FromErr(err)
-	}
-
-	return c, diags
 }
 
 func parseAwsIAM(d *schema.ResourceData) *client.IAM {
