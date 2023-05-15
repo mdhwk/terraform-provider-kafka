@@ -13,7 +13,6 @@ description: |-
 ## Example Usage
 
 ```terraform
-# basic usage of provider
 provider "kafka" {
   bootstrap_servers = [
     "broker-1:9094",
