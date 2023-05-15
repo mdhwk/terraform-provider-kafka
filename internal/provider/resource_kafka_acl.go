@@ -23,10 +23,10 @@ func resourceACL() *schema.Resource {
 				ForceNew: true,
 			},
 			"resource_type": {
-				Type:         schema.TypeString,
-				Required:     true,
-				ForceNew:     true,
-				ExactlyOneOf: []string{"Topic", "Group", "Cluster", "TransactionalID", "TransactionalID", "Any"},
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: true,
+				//ExactlyOneOf: []string{"Topic", "Group", "Cluster", "TransactionalID", "TransactionalID", "Any"},
 			},
 			"resource_pattern_type_filter": {
 				Type:     schema.TypeString,
