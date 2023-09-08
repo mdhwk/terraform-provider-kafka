@@ -4,4 +4,6 @@ provider "kafka" {
     "broker-2:9094",
     "broker-3:9094"
   ]
+
+  aws_iam {}
 }
