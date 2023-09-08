@@ -8,9 +8,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/sts"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/sts"
 	"github.com/twmb/franz-go/pkg/kadm"
 	"github.com/twmb/franz-go/pkg/kgo"
 	"github.com/twmb/franz-go/pkg/sasl"
@@ -25,6 +25,7 @@ type (
 	IAM struct {
 		RoleArn     string
 		SessionName string
+		Region      string
 	}
 )
 
@@ -55,11 +56,12 @@ func NewClient(cfg *Config) (*kadm.Client, error) {
 }
 
 func doAwsAuth(iam *IAM) (sasl.Mechanism, error) {
-	s, err := session.NewSessionWithOptions(session.Options{
-		Config: aws.Config{
-			CredentialsChainVerboseErrors: aws.Bool(true),
-		},
-	})
+	s, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(iam.Region))
+	// s, err := session.NewSessionWithOptions(session.Options{
+	// 	Config: aws.Config{
+	// 		CredentialsChainVerboseErrors: aws.Bool(true),
+	// 	},
+	// })
 	if err != nil {
 		return nil, err
 	}
@@ -78,8 +80,13 @@ func doAwsAuth(iam *IAM) (sasl.Mechanism, error) {
 	return c.AsManagedStreamingIAMMechanism(), nil
 }
 
-func doAwsDefaultAuth(s *session.Session) (kaws.Auth, error) {
-	val, err := s.Config.Credentials.GetWithContext(context.TODO())
+func doAwsDefaultAuth(s aws.Config) (kaws.Auth, error) {
+	// val, err := s.Config.Credentials.GetWithContext(context.TODO())
+	// if err != nil {
+	// 	return kaws.Auth{}, err
+	// }
+
+	val, err := s.Credentials.Retrieve(context.TODO())
 	if err != nil {
 		return kaws.Auth{}, err
 	}
@@ -93,16 +100,18 @@ func doAwsDefaultAuth(s *session.Session) (kaws.Auth, error) {
 	return a, nil
 }
 
-func doAwsRoleAssumeAuth(s *session.Session, roleArn, sessionName string) (kaws.Auth, error) {
-	sc := sts.New(s)
+func doAwsRoleAssumeAuth(s aws.Config, roleArn, sessionName string) (kaws.Auth, error) {
+	sc := sts.NewFromConfig(s)
 	if sessionName == "" {
 		sessionName = "terraform-provider-kafka"
 	}
 
-	res, err := sc.AssumeRole(&sts.AssumeRoleInput{
-		RoleArn:         aws.String(roleArn),
-		RoleSessionName: aws.String(sessionName),
-	})
+	res, err := sc.AssumeRole(
+		context.TODO(),
+		&sts.AssumeRoleInput{
+			RoleArn:         aws.String(roleArn),
+			RoleSessionName: aws.String(sessionName),
+		})
 	if err != nil {
 		return kaws.Auth{}, err
 	}
