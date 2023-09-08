@@ -86,6 +86,12 @@ func awsIamSchema() *schema.Schema {
 					Description: "An identifier for the assumed role session.",
 					//ValidateFunc: validAssumeRoleSessionName,
 				},
+				"region": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					Description: "Region where kafka is running.",
+					//ValidateFunc: validRegion,
+				},
 			},
 		},
 	}
@@ -97,6 +103,7 @@ func parseAwsIAM(d *schema.ResourceData) *client.IAM {
 		return &client.IAM{
 			RoleArn:     m["role_arn"].(string),
 			SessionName: m["session_name"].(string),
+			Region:      m["region"].(string),
 		}
 	}
 	return nil
