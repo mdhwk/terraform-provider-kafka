@@ -8,7 +8,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sts v1.21.5
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.27.0
 	github.com/twmb/franz-go v1.13.6
-	github.com/twmb/franz-go/pkg/kmsg v1.5.0
+	github.com/twmb/franz-go/pkg/kmsg v1.6.1
 )
 
 require (
